@@ -99,6 +99,18 @@ public class Aptabase: NSObject {
         }
     }
 
+    /// Nagara fork (issue #435): fully tears down the client — the symmetric
+    /// equivalent of `SentrySDK.close()`. Removes the foreground/background
+    /// lifecycle observers, stops the flush timer WITHOUT a final flush, and
+    /// discards any pending (already-queued) events. After this, the SDK makes
+    /// no further network requests until `initialize(...)` is called again.
+    /// Used to make analytics opt-out immediately stop all Aptabase activity.
+    @objc public func dispose() {
+        NotificationCenter.default.removeObserver(self)
+        client?.dispose()
+        client = nil
+    }
+
     private func enqueueEvent(_ eventName: String, with props: [String: AnyCodableValue] = [:]) {
         guard let client else {
             return
