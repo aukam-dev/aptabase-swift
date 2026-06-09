@@ -51,4 +51,12 @@ class ConcurrentQueue<T> {
         }
         return count
     }
+
+    // Nagara fork (issue #435): discard all pending elements so opt-out can
+    // drop queued analytics events without transmitting them.
+    func removeAll() {
+        queue.async(flags: .barrier) {
+            self.elements.removeAll()
+        }
+    }
 }
