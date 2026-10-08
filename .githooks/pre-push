@@ -1,0 +1,28 @@
+#!/bin/sh
+# Scan every commit about to leave this machine with the same rules as the
+# pre-commit hook. It catches what that hook never saw: a commit made before
+# the hooks were switched on, or one made with --no-verify.
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "Push abgelehnt: gitleaks ist nicht installiert (brew install gitleaks)." >&2
+    exit 1
+fi
+
+zero=0000000000000000000000000000000000000000
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    # deleting a remote branch carries no content
+    [ "$local_sha" = "$zero" ] && continue
+    if [ "$remote_sha" = "$zero" ]; then
+        # a new branch: every commit no remote has yet
+        range="$local_sha --not --remotes"
+    else
+        range="$remote_sha..$local_sha"
+    fi
+    if ! gitleaks git --redact --no-banner --config .gitleaks.toml --log-opts="$range" . ; then
+        echo "Push abgelehnt: $local_ref enthält ein Passwort, einen Schlüssel oder ein Token (Fundstelle oben). Den Commit bereinigen, dann erneut pushen." >&2
+        exit 1
+    fi
+done
+
+exit 0

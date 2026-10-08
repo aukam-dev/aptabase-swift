@@ -6,3 +6,16 @@ DerivedData/
 .swiftpm/config/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
+
+# aukam-dev standard (see FORK.md): credentials never enter the repository
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*service-account*.json
+.vscode/
+.idea/
+*.swp

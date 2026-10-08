@@ -1,0 +1,17 @@
+# aukam-dev standard for this fork (see FORK.md). Minor and patch updates arrive
+# grouped, majors one at a time. Only the workflow pins are watched: the package's
+# own dependencies follow upstream (aptabase/aptabase-swift).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    ignore:
+      # upstream's ci.yaml uses it; that workflow is disabled in this fork
+      - dependency-name: mxcl/xcodebuild
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
