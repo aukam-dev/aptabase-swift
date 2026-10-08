@@ -1,0 +1,25 @@
+# Secret scan behind every commit and every push (.githooks/). The built-in
+# gitleaks rules cover keys and tokens; the rule below adds what they miss: a
+# password written into a connection URL, the way a database or Redis address
+# carries one.
+title = "aptabase-swift"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "password-in-url"
+description = "Password inside a connection URL (scheme://user:password@host)"
+regex = '''[a-zA-Z][a-zA-Z0-9+.-]{1,30}://[^\s:/@'"]{1,64}:([^\s/@'"]{3,})@'''
+secretGroup = 1
+keywords = ["://"]
+
+[[rules.allowlists]]
+description = "Placeholders and interpolation stand for a value, they are none."
+regexTarget = "secret"
+regexes = [
+  '''^(PASSWORT|PASSWORD)$''',
+  '''^\*+REMOVED\*+$''',
+  '''^\$\{?[A-Za-z_]''',
+  '''^<[^>]+>$''',
+]

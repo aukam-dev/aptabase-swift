@@ -1,0 +1,15 @@
+#!/bin/sh
+# Refuse a commit that carries a password, key or token. Rules: the built-in
+# gitleaks set plus .gitleaks.toml. Active once per clone after
+#     git config core.hooksPath .githooks
+# Never bypass it with --no-verify; a credential belongs in .env.
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "Commit abgelehnt: gitleaks ist nicht installiert (brew install gitleaks)." >&2
+    exit 1
+fi
+
+if ! gitleaks git --pre-commit --staged --redact --no-banner --config .gitleaks.toml . ; then
+    echo "Commit abgelehnt: In den vorgemerkten Änderungen steht ein Passwort, Schlüssel oder Token (Fundstelle oben). Zugangsdaten gehören in .env." >&2
+    exit 1
+fi
