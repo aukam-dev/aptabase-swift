@@ -47,6 +47,17 @@ final class ConcurrentQueueTests: XCTestCase {
         XCTAssertTrue(concurrentQueue.isEmpty)
     }
 
+    func testRemoveAll() {
+        concurrentQueue.enqueue(contentsOf: [1, 2, 3, 4, 5])
+        XCTAssertEqual(concurrentQueue.count, 5)
+
+        concurrentQueue.removeAll()
+
+        XCTAssertTrue(concurrentQueue.isEmpty)
+        XCTAssertEqual(concurrentQueue.count, 0)
+        XCTAssertNil(concurrentQueue.dequeue())
+    }
+
     func testCount() {
         XCTAssertEqual(concurrentQueue.count, 0)
 

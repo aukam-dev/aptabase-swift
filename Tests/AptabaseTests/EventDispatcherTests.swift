@@ -81,6 +81,26 @@ final class EventDispatcherTests: XCTestCase {
         XCTAssertEqual(session.requestCount, 2)
     }
     
+    func testClearShouldDiscardQueuedEventsWithoutSending() async {
+        dispatcher.enqueue(newEvent("app_started"))
+        dispatcher.enqueue(newEvent("item_created"))
+
+        dispatcher.clear()
+        await dispatcher.flush()
+
+        XCTAssertEqual(session.requestCount, 0)
+    }
+
+    func testClearShouldKeepDispatcherUsable() async {
+        dispatcher.enqueue(newEvent("app_started"))
+        dispatcher.clear()
+
+        dispatcher.enqueue(newEvent("item_created"))
+        await dispatcher.flush()
+
+        XCTAssertEqual(session.requestCount, 1)
+    }
+
     private func newEvent(_ eventName: String) -> Event {
         return Event(timestamp: Date(),
                      sessionId: UUID().uuidString,
