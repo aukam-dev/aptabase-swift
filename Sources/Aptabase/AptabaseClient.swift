@@ -66,8 +66,9 @@ class AptabaseClient {
 
     // Nagara fork (issue #435): tear down the client for analytics opt-out.
     // Unlike stopPolling(), this does NOT trailing-flush — it invalidates the
-    // timer and DISCARDS the pending queue, so no further network requests
-    // (not even a final send) occur after the user disables analytics.
+    // timer and DISCARDS the pending queue, so no new flush starts (not even a
+    // final send) after the user disables analytics. A flush already running
+    // cannot be cancelled and still sends the one batch it has dequeued.
     public func dispose() {
         flushTimer?.invalidate()
         flushTimer = nil
