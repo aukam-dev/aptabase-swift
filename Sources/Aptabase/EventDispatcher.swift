@@ -50,6 +50,12 @@ public class EventDispatcher {
         events.enqueue(contentsOf: newEvents)
     }
 
+    // Nagara fork (issue #435): drop all queued events without sending them,
+    // so analytics opt-out stops transmission of already-queued events.
+    func clear() {
+        events.removeAll()
+    }
+
     func flush() async {
         if events.isEmpty {
             return
